@@ -31,8 +31,8 @@ public class CartController {
         return ResponseEntity.ok(cartService.update(cartUpdate));
     }
 
-    @PostMapping("/{customerId}/cart/products/{productId}")
-    public ResponseEntity<Void> addToCart(@PathVariable("customerId") String customerId, @PathVariable("productId") String productId, int quantity) {
+    @PostMapping("/{customerId}/cart/products/{productId}/{quantity}")
+    public ResponseEntity<Void> addToCart(@PathVariable("customerId") String customerId, @PathVariable("productId") String productId, @PathVariable Integer quantity) {
         cartService.addProductToCart(customerId, productId, quantity);
         return ResponseEntity.ok().build();
     }

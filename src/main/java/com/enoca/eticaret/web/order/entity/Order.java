@@ -17,14 +17,13 @@ import java.util.List;
 @Document(collection = "t_order", language = "tr")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Order extends BaseEntity { //sipariş
+public class Order extends BaseEntity {
     private String customerId;
     private List<String> productIds;
     private BigDecimal totalAmount;
-    private Integer quantity; // adet
+    private Integer quantity;
     private LocalDateTime orderDate;
     private Integer code;
-
     public Order() {
         this.productIds = new ArrayList<>();
         this.totalAmount = BigDecimal.ZERO;

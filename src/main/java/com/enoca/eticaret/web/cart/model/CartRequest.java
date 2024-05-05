@@ -9,4 +9,5 @@ public class CartRequest {
     private BigDecimal totalAmount = BigDecimal.ZERO;
     private List<String> productIds;
     private String customerId;
+
 }

@@ -55,25 +55,22 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public void addProductToCart(String customerId, String productId, int quantity) {
+    public void addProductToCart(String customerId, String productId, Integer quantity) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomNotFoundException("Müşteri bulunamadı: " + customerId));
 
-        // Müşteriye ait sepeti al veya yeni bir sepet oluştur
         Cart cart = customer.getCart();
         if (cart == null) {
             cart = new Cart();
             customer.setCart(cart);
         }
 
-        // Sepet içindeki ürünleri al veya yeni bir liste oluştur
         List<Product> products = cart.getProducts();
         if (products == null) {
             products = new ArrayList<>();
             cart.setProducts(products);
         }
 
-        // Eklenmek istenen ürünü bul
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CustomNotFoundException("Ürün bulunamadı: " + productId));
 
@@ -82,29 +79,21 @@ public class CartService implements ICartService {
             throw new CustomNotFoundException("Yeterli stok bulunmamaktadır. Stok: " + availableStock);
         }
 
-        // Ürünün sepete eklenmeden önce kontrollerini yap
         checkProductBeforeAddingToCart(customer, product);
 
-        // Ürünü sepete ekle
         products.add(product);
         cart.setCustomer(customer);
 
-        // Sepete ürün eklenirken toplam fiyatı güncelle
         BigDecimal totalAmount = cart.getTotalAmount().add(product.getPrice());
         cart.setTotalAmount(totalAmount);
 
-        // Sepetin güncellenmiş halini veritabanına kaydet
         cartRepository.save(cart);
 
-        // Ürün stoklarını azalt
         product.setStock(availableStock - quantity);
         productRepository.save(product);
 
-        // Sepete eklenen ürünü sipariş olarak kaydet
         placeOrder(customer, product, quantity);
 
-        //stock dan düşülecek
-        //cart temizlencek
         emptyCart(customer);
     }
 
@@ -121,40 +110,33 @@ public class CartService implements ICartService {
     }
 
 
-    private void placeOrder(Customer customer, Product product, int quantity) {
+    private void placeOrder(Customer customer, Product product, Integer quantity) {
         Random random = new Random();
         int orderNumber = random.nextInt(8);
         Order order = new Order();
         order.setCustomerId(customer.getId());
-        order.getProductIds().add(product.getId()); // Siparişe eklenen ürünün id'sini listeye ekle
-        order.setTotalAmount(product.getPrice()); // Siparişin toplam tutarı, eklenen ürünün fiyatıyla aynı
-        order.setOrderDate(LocalDateTime.now()); // Siparişin oluşturulma tarihi
+        order.getProductIds().add(product.getId());
+        order.setTotalAmount(product.getPrice());
+        order.setOrderDate(LocalDateTime.now());
         order.setCode(orderNumber);
-
+        order.setQuantity(1);
         orderRepository.save(order);
     }
 
 
 
     private void checkProductBeforeAddingToCart(Customer customer, Product product) {
-        // Ürün sepete daha önce eklenmiş mi kontrolü
         List<Product> products = customer.getCart().getProducts();
         Optional<Product> existingProduct = products.stream()
                 .filter(p -> p.getId().equals(product.getId()))
                 .findFirst();
 
         if (existingProduct.isPresent()) {
-            // Ürün sepette bulunduğunda adetini artır
             Product foundProduct = existingProduct.get();
-            foundProduct.setQuantity(foundProduct.getQuantity() + 1); // Varsayılan olarak 1 arttırıyoruz, isteğinize göre ayarlayabilirsiniz
-            // Diğer işlemler...
+            foundProduct.setQuantity(foundProduct.getQuantity() + 1);
         } else {
-            // Ürün sepette bulunmadığında normal ekleme işlemi yap
-            // Ürünü sepete ekleme
             products.add(product);
-            // Diğer işlemler...
         }
-        // Stok kontrolü
         if (product.getStock() <= 0) {
             throw new CustomNotFoundException("Üzgünüz, bu üründen stokta kalmamıştır.");
         }

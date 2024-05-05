@@ -13,10 +13,9 @@ import java.util.List;
 
 @Document(collection = "t_cart", language = "tr")
 @Data
-@EqualsAndHashCode(callSuper = true) //sepet
+@EqualsAndHashCode(callSuper = true)
 public class Cart extends BaseEntity {
     private BigDecimal totalAmount = BigDecimal.ZERO;
-    private int quantity;
     @DBRef
     private List<Product> products;
     @DBRef

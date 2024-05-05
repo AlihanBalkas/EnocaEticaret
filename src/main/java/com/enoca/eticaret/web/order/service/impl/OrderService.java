@@ -2,7 +2,6 @@ package com.enoca.eticaret.web.order.service.impl;
 
 import com.enoca.eticaret.web.order.entity.Order;
 import com.enoca.eticaret.web.order.mapper.OrderMapper;
-import com.enoca.eticaret.web.order.model.OrderRequest;
 import com.enoca.eticaret.web.order.model.OrderResponse;
 import com.enoca.eticaret.web.order.repository.OrderRepository;
 import com.enoca.eticaret.web.order.service.IOrderService;
@@ -25,12 +24,9 @@ public class OrderService implements IOrderService {
         List<Order> orders = orderRepository.findAll();
         return orderMapper.mapResponseToEntityList(orders);
     }
-
     @Override
-    public OrderResponse GetOrderForCode(Integer code) {
-        Order order = orderRepository.GetOrderForCode(code);
-        return orderMapper.mapResponseToEntity(order);
+    public List<OrderResponse> GetOrderForCode(Integer code) {
+        List<Order> orders = orderRepository.getOrderForCode(code);
+        return orderMapper.mapResponseToEntityList(orders);
     }
-
-
 }
