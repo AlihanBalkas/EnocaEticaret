@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public void addProductToCart(String customerId, String productId) {
+    public void addProductToCart(String customerId, String productId, int quantity) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomNotFoundException("Müşteri bulunamadı: " + customerId));
 
@@ -76,6 +77,11 @@ public class CartService implements ICartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CustomNotFoundException("Ürün bulunamadı: " + productId));
 
+        int availableStock = product.getStock();
+        if (availableStock < quantity) {
+            throw new CustomNotFoundException("Yeterli stok bulunmamaktadır. Stok: " + availableStock);
+        }
+
         // Ürünün sepete eklenmeden önce kontrollerini yap
         checkProductBeforeAddingToCart(customer, product);
 
@@ -90,19 +96,40 @@ public class CartService implements ICartService {
         // Sepetin güncellenmiş halini veritabanına kaydet
         cartRepository.save(cart);
 
+        // Ürün stoklarını azalt
+        product.setStock(availableStock - quantity);
+        productRepository.save(product);
+
         // Sepete eklenen ürünü sipariş olarak kaydet
-        saveOrder(customer, product);
+        placeOrder(customer, product, quantity);
 
         //stock dan düşülecek
         //cart temizlencek
+        emptyCart(customer);
     }
 
-    private void saveOrder(Customer customer, Product product) {
+    public void emptyCart(Customer customer) {
+        Cart cart = customer.getCart();
+        if (cart != null) {
+            List<Product> products = cart.getProducts();
+            if (products != null) {
+                products.clear();
+                cart.setTotalAmount(BigDecimal.ZERO);
+                cartRepository.save(cart);
+            }
+        }
+    }
+
+
+    private void placeOrder(Customer customer, Product product, int quantity) {
+        Random random = new Random();
+        int orderNumber = random.nextInt(8);
         Order order = new Order();
         order.setCustomerId(customer.getId());
         order.getProductIds().add(product.getId()); // Siparişe eklenen ürünün id'sini listeye ekle
         order.setTotalAmount(product.getPrice()); // Siparişin toplam tutarı, eklenen ürünün fiyatıyla aynı
         order.setOrderDate(LocalDateTime.now()); // Siparişin oluşturulma tarihi
+        order.setCode(orderNumber);
 
         orderRepository.save(order);
     }

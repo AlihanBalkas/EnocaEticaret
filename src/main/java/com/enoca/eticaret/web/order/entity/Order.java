@@ -21,8 +21,9 @@ public class Order extends BaseEntity { //sipariş
     private String customerId;
     private List<String> productIds;
     private BigDecimal totalAmount;
-    private int Quantity;
+    private Integer quantity; // adet
     private LocalDateTime orderDate;
+    private Integer code;
 
     public Order() {
         this.productIds = new ArrayList<>();

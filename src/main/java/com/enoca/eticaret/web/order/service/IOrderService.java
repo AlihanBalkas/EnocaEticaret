@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface IOrderService {
     List<OrderResponse> GetAllOrdersForCustomer();
+    OrderResponse GetOrderForCode(Integer code);
+
 }

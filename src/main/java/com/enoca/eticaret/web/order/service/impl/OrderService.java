@@ -26,4 +26,11 @@ public class OrderService implements IOrderService {
         return orderMapper.mapResponseToEntityList(orders);
     }
 
+    @Override
+    public OrderResponse GetOrderForCode(Integer code) {
+        Order order = orderRepository.GetOrderForCode(code);
+        return orderMapper.mapResponseToEntity(order);
+    }
+
+
 }

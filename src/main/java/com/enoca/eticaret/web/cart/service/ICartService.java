@@ -9,5 +9,5 @@ public interface ICartService {
     List<CartResponse> findAll();
     CartResponse findById(String id);
     CartResponse update(CartUpdate cartUpdate);
-    void addProductToCart(String customerId, String productId);
+    void addProductToCart(String customerId, String productId, int quantity);
 }

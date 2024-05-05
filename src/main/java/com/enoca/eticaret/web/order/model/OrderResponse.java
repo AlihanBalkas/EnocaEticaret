@@ -12,6 +12,7 @@ public class OrderResponse {
     private String customerId;
     private List<String> productIds;
     private BigDecimal totalAmount;
-    private int adet;
+    private Integer quantity;
     private LocalDateTime orderDate;
+    private Integer code;
 }

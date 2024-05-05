@@ -17,11 +17,14 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<OrderResponse>> GetAllOrdersForCustomer(){
         return ResponseEntity.ok(orderService.GetAllOrdersForCustomer());
     }
 
-
+    @GetMapping("/getCode")
+    public ResponseEntity<OrderResponse> GetOrderForCode(Integer code){
+        return ResponseEntity.ok(orderService.GetOrderForCode(code));
+    }
 
 }
