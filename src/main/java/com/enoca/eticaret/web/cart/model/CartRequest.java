@@ -7,5 +7,6 @@ import java.util.List;
 @Data
 public class CartRequest {
     private BigDecimal totalAmount = BigDecimal.ZERO;
-    private List<String> products;
+    private List<String> productIds;
+    private String customerId;
 }

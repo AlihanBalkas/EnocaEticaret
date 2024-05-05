@@ -19,18 +19,4 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{customerId}/cart/products/{productId}")
-    public ResponseEntity<Void> addToCart(@PathVariable("customerId") String customerId, @PathVariable("productId") String productId) {
-        customerService.addProductToCart(customerId, productId);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{customerId}/cart/products/{productId}")
-    public ResponseEntity<Void> removeFromCart(@PathVariable("customerId") String customerId, @PathVariable("productId") String productId) {
-        customerService.removeProductFromCart(customerId, productId);
-        return ResponseEntity.ok().build();
-    }
-
-
-
 }
